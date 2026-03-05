@@ -25,7 +25,7 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {/* Company Info */}
           <div className="space-y-4">
-            <Logo className="h-10 w-auto brightness-0 invert" />
+            <Logo className="h-16 w-auto" />
             <p className="text-background/80 text-sm">
               Southern Illinois&apos; most trusted construction company. Over
               20 years of building excellence in residential and commercial
