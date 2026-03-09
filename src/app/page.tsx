@@ -4,6 +4,7 @@ import { AboutPreview } from "@/components/sections/about-preview";
 import { HowItWorks } from "@/components/sections/how-it-works";
 import { Testimonials } from "@/components/sections/testimonials";
 import { CTA } from "@/components/sections/cta";
+import { RoofingBanner } from "@/components/sections/roofing-banner";
 import { FAQ } from "@/components/sections/faq";
 
 export default function Home() {
@@ -14,6 +15,7 @@ export default function Home() {
       <AboutPreview />
       <HowItWorks />
       <Testimonials />
+      <RoofingBanner />
       <CTA />
       <FAQ />
     </>

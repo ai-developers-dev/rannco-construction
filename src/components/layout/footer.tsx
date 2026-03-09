@@ -2,7 +2,10 @@ import Link from "next/link";
 import { Phone, Mail, MapPin, Clock, Facebook, Instagram } from "lucide-react";
 import { Logo } from "@/components/ui/logo";
 
-const navigation = {
+const navigation: {
+  services: { name: string; href: string }[];
+  company: { name: string; href: string; external?: boolean }[];
+} = {
   services: [
     { name: "Residential Construction", href: "/services#residential" },
     { name: "Commercial Construction", href: "/services#commercial" },
@@ -15,6 +18,7 @@ const navigation = {
     { name: "About Us", href: "/about" },
     { name: "Services", href: "/services" },
     { name: "Contact", href: "/contact" },
+    { name: "Rannco Roofing", href: "https://ranncoroof.com", external: true },
   ],
 };
 
@@ -74,12 +78,23 @@ export function Footer() {
             <ul className="space-y-2">
               {navigation.company.map((item) => (
                 <li key={item.name}>
-                  <Link
-                    href={item.href}
-                    className="text-background/80 hover:text-white transition-colors text-sm"
-                  >
-                    {item.name}
-                  </Link>
+                  {item.external ? (
+                    <a
+                      href={item.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-background/80 hover:text-white transition-colors text-sm"
+                    >
+                      {item.name}
+                    </a>
+                  ) : (
+                    <Link
+                      href={item.href}
+                      className="text-background/80 hover:text-white transition-colors text-sm"
+                    >
+                      {item.name}
+                    </Link>
+                  )}
                 </li>
               ))}
             </ul>
