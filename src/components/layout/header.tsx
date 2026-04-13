@@ -4,9 +4,10 @@ import { useState } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
-import { Menu, Phone, Mail } from "lucide-react";
+import { Menu, Phone } from "lucide-react";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import { Logo } from "@/components/ui/logo";
+import { ContactDialog } from "@/components/forms/contact-dialog";
 
 const navigation = [
   { name: "Projects", href: "/projects" },
@@ -49,12 +50,9 @@ export function Header() {
               <Phone className="h-4 w-4 mr-2" />
               (618) 594-1178
             </a>
-            <a
-              href="mailto:chood@rannco.com"
-              className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2"
-            >
-              Get Started
-            </a>
+            <ContactDialog source="get_started">
+              <Button>Get Started</Button>
+            </ContactDialog>
           </div>
 
           {/* Mobile Menu */}
@@ -100,13 +98,15 @@ export function Header() {
                     <Phone className="h-5 w-5" />
                     (618) 594-1178
                   </a>
-                  <a
-                    href="mailto:chood@rannco.com"
-                    onClick={() => setIsOpen(false)}
-                    className="inline-flex items-center justify-center w-full whitespace-nowrap rounded-md text-base font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 bg-primary text-primary-foreground hover:bg-primary/90 h-11 px-8 mt-4"
-                  >
-                    Get Started
-                  </a>
+                  <ContactDialog source="get_started">
+                    <Button
+                      className="w-full mt-4"
+                      size="lg"
+                      onClick={() => setIsOpen(false)}
+                    >
+                      Get Started
+                    </Button>
+                  </ContactDialog>
                 </div>
               </div>
             </SheetContent>

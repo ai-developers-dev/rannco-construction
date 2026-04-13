@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import { Header } from "@/components/layout/header";
-import { Footer } from "@/components/layout/footer";
+import { LayoutWrapper } from "@/components/layout/layout-wrapper";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -125,7 +124,7 @@ const jsonLd = {
   "@id": siteUrl,
   url: siteUrl,
   telephone: "+1-618-594-1178",
-  email: "chood@rannco.com",
+  email: "office@rannco.com",
   address: {
     "@type": "PostalAddress",
     streetAddress: "505 E Walnut St",
@@ -143,7 +142,7 @@ const jsonLd = {
     "@type": "ContactPoint",
     telephone: "+1-618-594-1178",
     contactType: "customer service",
-    email: "chood@rannco.com",
+    email: "office@rannco.com",
     areaServed: "US",
     availableLanguage: "English",
   },
@@ -168,12 +167,6 @@ const jsonLd = {
       dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
       opens: "07:00",
       closes: "18:00",
-    },
-    {
-      "@type": "OpeningHoursSpecification",
-      dayOfWeek: "Saturday",
-      opens: "08:00",
-      closes: "14:00",
     },
   ],
   sameAs: [
@@ -245,9 +238,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <Header />
-        {children}
-        <Footer />
+        <LayoutWrapper>{children}</LayoutWrapper>
       </body>
     </html>
   );

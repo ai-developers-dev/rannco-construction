@@ -185,7 +185,7 @@ export default function ServicesPage() {
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <a
-                href="mailto:chood@rannco.com"
+                href="mailto:office@rannco.com"
                 className="inline-flex items-center justify-center whitespace-nowrap rounded-md font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 bg-primary text-primary-foreground hover:bg-primary/90 h-11 px-8"
               >
                 Email for Quote
@@ -241,7 +241,7 @@ export default function ServicesPage() {
                     ))}
                   </ul>
                   <a
-                    href="mailto:chood@rannco.com"
+                    href="mailto:office@rannco.com"
                     className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2"
                   >
                     Get a Quote

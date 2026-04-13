@@ -1,5 +1,8 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
 import { Phone, Mail } from "lucide-react";
+import { ContactDialog } from "@/components/forms/contact-dialog";
 
 export function CTA() {
   return (
@@ -15,13 +18,15 @@ export function CTA() {
             why homeowners and businesses trust Rannco Construction.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <a
-              href="mailto:chood@rannco.com"
-              className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-semibold text-base ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 bg-primary text-primary-foreground hover:bg-primary/90 h-11 px-8"
-            >
-              <Mail className="h-5 w-5" />
-              Email Us
-            </a>
+            <ContactDialog source="get_started">
+              <Button
+                size="lg"
+                className="font-semibold text-base h-11 px-8"
+              >
+                <Mail className="h-5 w-5" />
+                Get Started
+              </Button>
+            </ContactDialog>
             <a
               href="tel:+16185941178"
               className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-semibold text-base ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 bg-transparent text-white border border-white hover:bg-white hover:text-foreground h-11 px-8"

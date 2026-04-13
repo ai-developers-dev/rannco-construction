@@ -36,6 +36,13 @@ yarn-error.log*
 # vercel
 .vercel
 
+# local database
+local.db
+
+# source images (not web-ready)
+/Images/
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+public/uploads/

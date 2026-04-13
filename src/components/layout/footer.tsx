@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Phone, Mail, MapPin, Clock, Facebook, Instagram } from "lucide-react";
+import { Phone, Mail, MapPin, Clock, Facebook, Instagram, LogIn } from "lucide-react";
 import { Logo } from "@/components/ui/logo";
 
 const navigation: {
@@ -105,7 +105,7 @@ export function Footer() {
             <h3 className="font-semibold text-lg mb-4">Contact</h3>
             <ul className="space-y-3">
               <li className="flex items-start">
-                <Phone className="h-4 w-4 mr-3 mt-0.5 flex-shrink-0" />
+                <Phone className="h-4 w-4 mr-3 mt-0.5 shrink-0" />
                 <a
                   href="tel:+16185941178"
                   className="text-background/80 hover:text-white transition-colors text-sm"
@@ -114,16 +114,16 @@ export function Footer() {
                 </a>
               </li>
               <li className="flex items-start">
-                <Mail className="h-4 w-4 mr-3 mt-0.5 flex-shrink-0" />
+                <Mail className="h-4 w-4 mr-3 mt-0.5 shrink-0" />
                 <a
-                  href="mailto:chood@rannco.com"
+                  href="mailto:office@rannco.com"
                   className="text-background/80 hover:text-white transition-colors text-sm"
                 >
-                  chood@rannco.com
+                  office@rannco.com
                 </a>
               </li>
               <li className="flex items-start">
-                <MapPin className="h-4 w-4 mr-3 mt-0.5 flex-shrink-0" />
+                <MapPin className="h-4 w-4 mr-3 mt-0.5 shrink-0" />
                 <span className="text-background/80 text-sm">
                   505 E Walnut St<br />
                   Harrisburg, IL 62946<br />
@@ -131,10 +131,9 @@ export function Footer() {
                 </span>
               </li>
               <li className="flex items-start">
-                <Clock className="h-4 w-4 mr-3 mt-0.5 flex-shrink-0" />
+                <Clock className="h-4 w-4 mr-3 mt-0.5 shrink-0" />
                 <span className="text-background/80 text-sm">
                   Mon - Fri: 7:00 AM - 6:00 PM<br />
-                  Sat: 8:00 AM - 2:00 PM<br />
                   24/7 Emergency Services
                 </span>
               </li>
@@ -148,7 +147,7 @@ export function Footer() {
             <p className="text-background/60 text-sm">
               © {new Date().getFullYear()} Rannco Construction. All rights reserved.
             </p>
-            <div className="flex space-x-6 text-sm">
+            <div className="flex items-center space-x-6 text-sm">
               <Link
                 href="/privacy"
                 className="text-background/60 hover:text-white transition-colors"
@@ -160,6 +159,13 @@ export function Footer() {
                 className="text-background/60 hover:text-white transition-colors"
               >
                 Terms of Service
+              </Link>
+              <Link
+                href="/admin"
+                className="text-background/40 hover:text-white transition-colors inline-flex items-center gap-1.5"
+              >
+                <LogIn className="h-3.5 w-3.5" />
+                Admin
               </Link>
             </div>
           </div>

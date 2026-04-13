@@ -1,9 +1,6 @@
 import { Metadata } from "next";
-import Image from "next/image";
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { MapPin } from "lucide-react";
 import { CTA } from "@/components/sections/cta";
+import { ProjectCategories } from "./project-categories";
 
 export const metadata: Metadata = {
   title: "Construction Projects in Harrisburg & Southern Illinois",
@@ -22,129 +19,6 @@ export const metadata: Metadata = {
       "Browse our portfolio of 500+ completed construction projects in Harrisburg & Southern Illinois. Quality craftsmanship you can trust.",
   },
 };
-
-const projects = [
-  {
-    id: 1,
-    image: "/images/projects/IMG_6650.PNG",
-    title: "Custom Brick Estate",
-    description: "Complete custom home build with premium finishes",
-    location: "Harrisburg, IL",
-    category: "Residential",
-  },
-  {
-    id: 2,
-    image: "/images/projects/IMG_6655.PNG",
-    title: "Two-Story Home Build",
-    description: "Full residential construction with modern design",
-    location: "Harrisburg, IL",
-    category: "Residential",
-  },
-  {
-    id: 3,
-    image: "/images/projects/IMG_1540.PNG",
-    title: "Country Home Construction",
-    description: "New home construction on rural property",
-    location: "Harrisburg, IL",
-    category: "Residential",
-  },
-  {
-    id: 4,
-    image: "/images/projects/IMG_6647.PNG",
-    title: "Home Renovation",
-    description: "Complete residential renovation and modernization",
-    location: "Harrisburg, IL",
-    category: "Renovation",
-  },
-  {
-    id: 5,
-    image: "/images/projects/IMG_6648.PNG",
-    title: "Residential Addition",
-    description: "Two-story addition with seamless integration",
-    location: "Harrisburg, IL",
-    category: "Residential",
-  },
-  {
-    id: 6,
-    image: "/images/projects/IMG_6649.PNG",
-    title: "Kitchen & Bath Remodel",
-    description: "Full interior renovation with custom cabinetry",
-    location: "Harrisburg, IL",
-    category: "Renovation",
-  },
-  {
-    id: 7,
-    image: "/images/projects/IMG_6651.PNG",
-    title: "Commercial Build-Out",
-    description: "Office space construction and fit-out",
-    location: "Harrisburg, IL",
-    category: "Commercial",
-  },
-  {
-    id: 8,
-    image: "/images/projects/IMG_6652.PNG",
-    title: "Foundation & Concrete",
-    description: "Commercial foundation and slab work",
-    location: "Harrisburg, IL",
-    category: "Foundation",
-  },
-  {
-    id: 9,
-    image: "/images/projects/IMG_6653.PNG",
-    title: "Residential Construction",
-    description: "Quality home build for growing family",
-    location: "Harrisburg, IL",
-    category: "Residential",
-  },
-  {
-    id: 10,
-    image: "/images/projects/IMG_6654.PNG",
-    title: "Home Restoration",
-    description: "Complete home restoration and modernization",
-    location: "Harrisburg, IL",
-    category: "Renovation",
-  },
-  {
-    id: 11,
-    image: "/images/projects/IMG_6656.PNG",
-    title: "New Home Build",
-    description: "Modern residential construction project",
-    location: "Harrisburg, IL",
-    category: "Residential",
-  },
-  {
-    id: 12,
-    image: "/images/projects/IMG_6657.PNG",
-    title: "Whole-House Renovation",
-    description: "Complete renovation with structural updates",
-    location: "Harrisburg, IL",
-    category: "Renovation",
-  },
-  {
-    id: 13,
-    image: "/images/projects/IMG_6658.PNG",
-    title: "Custom Home Project",
-    description: "Premium custom home with quality finishes",
-    location: "Harrisburg, IL",
-    category: "Residential",
-  },
-  {
-    id: 14,
-    image: "/images/projects/IMG_6659.PNG",
-    title: "Residential Remodel",
-    description: "Full home remodel with modern updates",
-    location: "Harrisburg, IL",
-    category: "Renovation",
-  },
-  {
-    id: 15,
-    image: "/images/projects/IMG_1543.PNG",
-    title: "Eldorado Redemption Church",
-    description: "Commercial church construction project",
-    location: "Thompsonville, IL",
-    category: "Commercial",
-  },
-];
 
 export default function ProjectsPage() {
   return (
@@ -167,40 +41,17 @@ export default function ProjectsPage() {
         </div>
       </section>
 
-      {/* Projects Grid */}
+      {/* Categories */}
       <section className="py-20 bg-background">
         <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {projects.map((project) => (
-              <Card
-                key={project.id}
-                className="group overflow-hidden border-border/50 hover:shadow-xl transition-all duration-300"
-              >
-                <div className="relative aspect-[4/3] overflow-hidden">
-                  <Image
-                    src={project.image}
-                    alt={project.title}
-                    fill
-                    className="object-cover group-hover:scale-105 transition-transform duration-500"
-                  />
-                  <Badge className="absolute top-4 left-4 bg-primary text-primary-foreground">
-                    {project.category}
-                  </Badge>
-                </div>
-                <CardContent className="p-5">
-                  <h3 className="text-lg font-semibold text-foreground mb-2">
-                    {project.title}
-                  </h3>
-                  <p className="text-muted-foreground text-sm mb-3">
-                    {project.description}
-                  </p>
-                  <div className="flex items-center text-sm text-muted-foreground">
-                    <MapPin className="h-4 w-4 mr-1 text-primary" />
-                    {project.location}
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
+          <div className="max-w-4xl mx-auto">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl font-bold mb-4">Browse by Category</h2>
+              <p className="text-muted-foreground text-lg">
+                Select a category to view our completed projects
+              </p>
+            </div>
+            <ProjectCategories />
           </div>
         </div>
       </section>
