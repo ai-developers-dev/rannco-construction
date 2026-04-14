@@ -53,6 +53,14 @@ export function Header() {
             <ContactDialog source="get_started">
               <Button>Get Started</Button>
             </ContactDialog>
+            <a
+              href="https://ranncoroof.com/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 border border-primary text-primary hover:bg-primary hover:text-white h-10 px-4"
+            >
+              <span className="leading-tight text-center text-xs">Need<br />Roofing?</span>
+            </a>
           </div>
 
           {/* Mobile Menu */}
@@ -107,6 +115,15 @@ export function Header() {
                       Get Started
                     </Button>
                   </ContactDialog>
+                  <a
+                    href="https://ranncoroof.com/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={() => setIsOpen(false)}
+                    className="inline-flex items-center justify-center w-full whitespace-nowrap rounded-md text-base font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 border border-primary text-primary hover:bg-primary hover:text-white h-11 px-8 mt-3"
+                  >
+                    Need Roofing?
+                  </a>
                 </div>
               </div>
             </SheetContent>
