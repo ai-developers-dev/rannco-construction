@@ -29,7 +29,7 @@ export function Header() {
           </Link>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-8">
+          <nav className="hidden lg:flex items-center space-x-8">
             {navigation.map((item) => (
               <Link
                 key={item.name}
@@ -42,10 +42,10 @@ export function Header() {
           </nav>
 
           {/* CTA and Phone */}
-          <div className="hidden md:flex items-center space-x-4">
+          <div className="hidden lg:flex items-center space-x-3">
             <a
               href="tel:+16185941178"
-              className="flex items-center text-sm font-medium text-foreground hover:text-primary"
+              className="flex items-center text-sm font-medium text-foreground hover:text-primary whitespace-nowrap"
             >
               <Phone className="h-4 w-4 mr-2" />
               (618) 594-1178
@@ -65,7 +65,7 @@ export function Header() {
 
           {/* Mobile Menu */}
           <Sheet open={isOpen} onOpenChange={setIsOpen}>
-            <SheetTrigger asChild className="md:hidden">
+            <SheetTrigger asChild className="lg:hidden">
               <Button variant="ghost" size="icon">
                 <Menu className="h-6 w-6" />
                 <span className="sr-only">Toggle menu</span>
