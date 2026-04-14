@@ -153,7 +153,7 @@ export default function AboutPage() {
               <div
                 className="aspect-square rounded-2xl overflow-hidden bg-cover bg-center"
                 style={{
-                  backgroundImage: `url('/images/projects/IMG_6655.PNG')`,
+                  backgroundImage: `url('/images/projects/about-story.jpg')`,
                 }}
               />
               <div className="absolute bottom-4 left-4 sm:-bottom-6 sm:-left-6 bg-primary text-primary-foreground p-4 sm:p-6 rounded-xl shadow-xl">
