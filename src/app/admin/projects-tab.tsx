@@ -46,6 +46,7 @@ import {
   ImageIcon,
   Pencil,
   GripVertical,
+  Star,
   Home,
   Building2,
   Hammer,
@@ -89,14 +90,17 @@ interface ProjectImage {
   category_id: number;
   image_path: string;
   display_order: number;
+  featured: number;
 }
 
 function SortableImage({
   img,
   onDelete,
+  onToggleFeatured,
 }: {
   img: ProjectImage;
   onDelete: (id: number) => void;
+  onToggleFeatured: (id: number, featured: boolean) => void;
 }) {
   const {
     attributes,
@@ -137,11 +141,26 @@ function SortableImage({
       >
         <GripVertical className="h-4 w-4" />
       </div>
-      {/* Delete button */}
-      <div className="absolute top-1 right-1 opacity-0 group-hover:opacity-100 transition-opacity">
+      {/* Featured star + Delete button */}
+      <div className="absolute top-1 right-1 flex gap-1">
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            onToggleFeatured(img.id, !img.featured);
+          }}
+          className={`w-7 h-7 rounded flex items-center justify-center transition-all ${
+            img.featured
+              ? "bg-yellow-500 text-white opacity-100"
+              : "bg-black/50 hover:bg-black/70 text-white opacity-0 group-hover:opacity-100"
+          }`}
+          title={img.featured ? "Remove from homepage" : "Show on homepage"}
+        >
+          <Star className={`h-4 w-4 ${img.featured ? "fill-current" : ""}`} />
+        </button>
         <Button
           variant="destructive"
           size="icon-xs"
+          className="opacity-0 group-hover:opacity-100 transition-opacity"
           onClick={(e) => {
             e.stopPropagation();
             onDelete(img.id);
@@ -345,6 +364,20 @@ export function ProjectsTab() {
     }
   };
 
+  const handleToggleFeatured = async (imageId: number, featured: boolean) => {
+    await fetch("/api/admin/images", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id: imageId, featured }),
+    });
+
+    setImages((prev) =>
+      prev.map((img) =>
+        img.id === imageId ? { ...img, featured: featured ? 1 : 0 } : img
+      )
+    );
+  };
+
   const handleDeleteImage = async (imageId: number) => {
     if (!confirm("Delete this image?")) return;
 
@@ -524,6 +557,12 @@ export function ProjectsTab() {
               <h3 className="text-lg font-semibold">
                 {selectedCategory.title} Images
               </h3>
+              {images.filter((img) => img.featured).length > 0 && (
+                <span className="text-xs font-medium bg-yellow-100 text-yellow-700 px-2 py-0.5 rounded-full flex items-center gap-1">
+                  <Star className="h-3 w-3 fill-current" />
+                  {images.filter((img) => img.featured).length} on homepage
+                </span>
+              )}
               {saving && (
                 <span className="text-xs text-muted-foreground flex items-center gap-1">
                   <Loader2 className="h-3 w-3 animate-spin" />
@@ -601,6 +640,7 @@ export function ProjectsTab() {
                       key={img.id}
                       img={img}
                       onDelete={handleDeleteImage}
+                      onToggleFeatured={handleToggleFeatured}
                     />
                   ))}
                 </div>

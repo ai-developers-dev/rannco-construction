@@ -133,20 +133,29 @@ export async function PATCH(request: NextRequest) {
 
   await initializeDb();
 
-  const { orderedIds } = await request.json();
+  const body = await request.json();
 
-  if (!Array.isArray(orderedIds)) {
-    return NextResponse.json({ error: "orderedIds array is required" }, { status: 400 });
-  }
-
-  for (let i = 0; i < orderedIds.length; i++) {
+  // Toggle featured flag
+  if ("id" in body && "featured" in body) {
     await db.execute({
-      sql: "UPDATE project_images SET display_order = ? WHERE id = ?",
-      args: [i, orderedIds[i]],
+      sql: "UPDATE project_images SET featured = ? WHERE id = ?",
+      args: [body.featured ? 1 : 0, body.id],
     });
+    return NextResponse.json({ success: true });
   }
 
-  return NextResponse.json({ success: true });
+  // Reorder images
+  if ("orderedIds" in body && Array.isArray(body.orderedIds)) {
+    for (let i = 0; i < body.orderedIds.length; i++) {
+      await db.execute({
+        sql: "UPDATE project_images SET display_order = ? WHERE id = ?",
+        args: [i, body.orderedIds[i]],
+      });
+    }
+    return NextResponse.json({ success: true });
+  }
+
+  return NextResponse.json({ error: "Invalid request" }, { status: 400 });
 }
 
 export async function DELETE(request: NextRequest) {

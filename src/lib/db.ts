@@ -49,10 +49,32 @@ export async function initializeDb() {
         category_id INTEGER NOT NULL,
         image_path TEXT NOT NULL,
         display_order INTEGER NOT NULL DEFAULT 0,
+        featured INTEGER NOT NULL DEFAULT 0,
         created_at TEXT NOT NULL DEFAULT (datetime('now')),
         FOREIGN KEY (category_id) REFERENCES project_categories(id) ON DELETE CASCADE
       )`,
       args: [],
     },
+    {
+      sql: `CREATE TABLE IF NOT EXISTS _migrations (name TEXT PRIMARY KEY)`,
+      args: [],
+    },
   ]);
+
+  // Run migrations for existing databases
+  try {
+    const ran = await db.execute("SELECT name FROM _migrations");
+    const done = new Set(ran.rows.map((r) => r.name as string));
+
+    if (!done.has("add_featured_column")) {
+      try {
+        await db.execute("ALTER TABLE project_images ADD COLUMN featured INTEGER NOT NULL DEFAULT 0");
+      } catch {
+        // Column may already exist
+      }
+      await db.execute({ sql: "INSERT OR IGNORE INTO _migrations (name) VALUES (?)", args: ["add_featured_column"] });
+    }
+  } catch {
+    // _migrations table might not exist yet on first run
+  }
 }

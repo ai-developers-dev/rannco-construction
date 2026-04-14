@@ -4,87 +4,32 @@ import { useState, useEffect, useCallback } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { ChevronLeft, ChevronRight, ArrowRight } from "lucide-react";
-import { Button } from "@/components/ui/button";
 
-const projects = [
-  {
-    id: 1,
-    image: "/images/projects/IMG_8302.jpeg",
-    title: "Project",
-    caption: "Quality construction by Rannco Construction",
-  },
-  {
-    id: 2,
-    image: "/images/projects/IMG_8303.jpeg",
-    title: "Project",
-    caption: "Quality construction by Rannco Construction",
-  },
-  {
-    id: 3,
-    image: "/images/projects/IMG_8304.jpeg",
-    title: "Project",
-    caption: "Quality construction by Rannco Construction",
-  },
-  {
-    id: 4,
-    image: "/images/projects/IMG_8305.jpeg",
-    title: "Project",
-    caption: "Quality construction by Rannco Construction",
-  },
-  {
-    id: 5,
-    image: "/images/projects/IMG_8306.jpeg",
-    title: "Project",
-    caption: "Quality construction by Rannco Construction",
-  },
-  {
-    id: 6,
-    image: "/images/projects/IMG_8307.jpeg",
-    title: "Project",
-    caption: "Quality construction by Rannco Construction",
-  },
-  {
-    id: 7,
-    image: "/images/projects/IMG_8308.jpeg",
-    title: "Project",
-    caption: "Quality construction by Rannco Construction",
-  },
-  {
-    id: 8,
-    image: "/images/projects/IMG_8309.jpeg",
-    title: "Project",
-    caption: "Quality construction by Rannco Construction",
-  },
-  {
-    id: 9,
-    image: "/images/projects/IMG_8310.jpeg",
-    title: "Project",
-    caption: "Quality construction by Rannco Construction",
-  },
-  {
-    id: 10,
-    image: "/images/projects/IMG_8311.jpeg",
-    title: "Project",
-    caption: "Quality construction by Rannco Construction",
-  },
-  {
-    id: 11,
-    image: "/images/projects/IMG_6753.PNG",
-    title: "Project",
-    caption: "Quality construction by Rannco Construction",
-  },
-];
+interface FeaturedImage {
+  id: number;
+  path: string;
+}
 
 export function ProjectsSlider() {
+  const [images, setImages] = useState<FeaturedImage[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
+  const [loading, setLoading] = useState(true);
 
-  const nextSlide = useCallback(() => {
-    setCurrentIndex((prev) => (prev + 1) % projects.length);
+  useEffect(() => {
+    fetch("/api/projects?featured=true")
+      .then((res) => res.json())
+      .then((data) => setImages(data.images || []))
+      .catch(() => {})
+      .finally(() => setLoading(false));
   }, []);
 
+  const nextSlide = useCallback(() => {
+    setCurrentIndex((prev) => (prev + 1) % images.length);
+  }, [images.length]);
+
   const prevSlide = () => {
-    setCurrentIndex((prev) => (prev - 1 + projects.length) % projects.length);
+    setCurrentIndex((prev) => (prev - 1 + images.length) % images.length);
   };
 
   const goToSlide = (index: number) => {
@@ -93,14 +38,17 @@ export function ProjectsSlider() {
   };
 
   useEffect(() => {
-    if (!isAutoPlaying) return;
+    if (!isAutoPlaying || images.length <= 1) return;
 
     const interval = setInterval(() => {
       nextSlide();
     }, 5000);
 
     return () => clearInterval(interval);
-  }, [isAutoPlaying, nextSlide]);
+  }, [isAutoPlaying, nextSlide, images.length]);
+
+  // Don't render the section if loading or no featured images
+  if (loading || images.length === 0) return null;
 
   return (
     <section className="py-24 bg-background" id="projects">
@@ -122,73 +70,70 @@ export function ProjectsSlider() {
         <div className="relative max-w-5xl mx-auto">
           {/* Main Image */}
           <div className="relative aspect-[16/10] rounded-xl overflow-hidden shadow-2xl">
-            {projects.map((project, index) => (
+            {images.map((image, index) => (
               <div
-                key={project.id}
+                key={image.id}
                 className={`absolute inset-0 transition-opacity duration-500 ${
                   index === currentIndex ? "opacity-100" : "opacity-0"
                 }`}
               >
                 <Image
-                  src={project.image}
-                  alt={project.title}
+                  src={image.path}
+                  alt={`Featured project ${index + 1}`}
                   fill
                   className="object-cover"
                   priority={index === 0}
+                  sizes="(max-width: 1280px) 100vw, 1280px"
                 />
                 {/* Gradient overlay */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
-
-                {/* Caption */}
-                <div className="absolute bottom-0 left-0 right-0 p-6 md:p-8">
-                  <h3 className="text-xl md:text-2xl font-bold text-white mb-2">
-                    {project.title}
-                  </h3>
-                  <p className="text-white/80 text-sm md:text-base">
-                    {project.caption}
-                  </p>
-                </div>
+                <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
               </div>
             ))}
 
             {/* Navigation Arrows */}
-            <button
-              onClick={() => {
-                prevSlide();
-                setIsAutoPlaying(false);
-              }}
-              className="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 md:w-12 md:h-12 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center text-white hover:bg-white/30 transition-colors"
-              aria-label="Previous project"
-            >
-              <ChevronLeft className="h-6 w-6" />
-            </button>
-            <button
-              onClick={() => {
-                nextSlide();
-                setIsAutoPlaying(false);
-              }}
-              className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 md:w-12 md:h-12 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center text-white hover:bg-white/30 transition-colors"
-              aria-label="Next project"
-            >
-              <ChevronRight className="h-6 w-6" />
-            </button>
+            {images.length > 1 && (
+              <>
+                <button
+                  onClick={() => {
+                    prevSlide();
+                    setIsAutoPlaying(false);
+                  }}
+                  className="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 md:w-12 md:h-12 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center text-white hover:bg-white/30 transition-colors"
+                  aria-label="Previous project"
+                >
+                  <ChevronLeft className="h-6 w-6" />
+                </button>
+                <button
+                  onClick={() => {
+                    nextSlide();
+                    setIsAutoPlaying(false);
+                  }}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 md:w-12 md:h-12 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center text-white hover:bg-white/30 transition-colors"
+                  aria-label="Next project"
+                >
+                  <ChevronRight className="h-6 w-6" />
+                </button>
+              </>
+            )}
           </div>
 
           {/* Dots */}
-          <div className="flex justify-center gap-2 mt-6">
-            {projects.map((_, index) => (
-              <button
-                key={index}
-                onClick={() => goToSlide(index)}
-                className={`w-2.5 h-2.5 rounded-full transition-all ${
-                  index === currentIndex
-                    ? "bg-primary w-8"
-                    : "bg-muted-foreground/30 hover:bg-muted-foreground/50"
-                }`}
-                aria-label={`Go to project ${index + 1}`}
-              />
-            ))}
-          </div>
+          {images.length > 1 && (
+            <div className="flex justify-center gap-2 mt-6">
+              {images.map((_, index) => (
+                <button
+                  key={index}
+                  onClick={() => goToSlide(index)}
+                  className={`w-2.5 h-2.5 rounded-full transition-all ${
+                    index === currentIndex
+                      ? "bg-primary w-8"
+                      : "bg-muted-foreground/30 hover:bg-muted-foreground/50"
+                  }`}
+                  aria-label={`Go to project ${index + 1}`}
+                />
+              ))}
+            </div>
+          )}
         </div>
 
         {/* View All Link */}
