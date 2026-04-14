@@ -2,11 +2,9 @@ import { NextRequest, NextResponse } from "next/server";
 import { writeFile } from "fs/promises";
 import { execSync } from "child_process";
 import path from "path";
-import { put, del } from "@vercel/blob";
+import { del } from "@vercel/blob";
 import { db, initializeDb } from "@/lib/db";
 import { getSession } from "@/lib/auth";
-
-const isProduction = process.env.VERCEL === "1";
 
 export async function GET(request: NextRequest) {
   await initializeDb();
@@ -28,21 +26,6 @@ export async function GET(request: NextRequest) {
   return NextResponse.json({ images: result.rows });
 }
 
-async function uploadToBlob(buffer: Buffer, fileName: string): Promise<string> {
-  const blob = await put(`projects/${fileName}`, buffer, {
-    access: "public",
-    addRandomSuffix: false,
-  });
-  return blob.url;
-}
-
-async function uploadLocal(buffer: Buffer, fileName: string): Promise<string> {
-  const uploadDir = path.join(process.cwd(), "public", "uploads", "projects");
-  const filePath = path.join(uploadDir, fileName);
-  await writeFile(filePath, buffer);
-  return `/uploads/projects/${fileName}`;
-}
-
 export async function POST(request: NextRequest) {
   const session = await getSession();
   if (!session) {
@@ -51,6 +34,37 @@ export async function POST(request: NextRequest) {
 
   await initializeDb();
 
+  const contentType = request.headers.get("content-type") || "";
+
+  // JSON body — image already uploaded to Blob via client-side upload
+  if (contentType.includes("application/json")) {
+    const { category_id, image_url } = await request.json();
+
+    if (!category_id || !image_url) {
+      return NextResponse.json(
+        { error: "category_id and image_url are required" },
+        { status: 400 }
+      );
+    }
+
+    const maxOrder = await db.execute({
+      sql: "SELECT COALESCE(MAX(display_order), -1) as max_order FROM project_images WHERE category_id = ?",
+      args: [Number(category_id)],
+    });
+    const nextOrder = (maxOrder.rows[0].max_order as number) + 1;
+
+    const result = await db.execute({
+      sql: "INSERT INTO project_images (category_id, image_path, display_order) VALUES (?, ?, ?)",
+      args: [Number(category_id), image_url, nextOrder],
+    });
+
+    return NextResponse.json({
+      success: true,
+      images: [{ id: Number(result.lastInsertRowid), path: image_url }],
+    });
+  }
+
+  // FormData body — local dev file upload fallback
   const formData = await request.formData();
   const categoryId = formData.get("category_id") as string;
   const files = formData.getAll("files") as File[];
@@ -63,6 +77,7 @@ export async function POST(request: NextRequest) {
   }
 
   const savedImages: { id: number; path: string }[] = [];
+  const uploadDir = path.join(process.cwd(), "public", "uploads", "projects");
 
   const maxOrder = await db.execute({
     sql: "SELECT COALESCE(MAX(display_order), -1) as max_order FROM project_images WHERE category_id = ?",
@@ -72,19 +87,16 @@ export async function POST(request: NextRequest) {
 
   for (const file of files) {
     const bytes = await file.arrayBuffer();
-    let buffer = Buffer.from(bytes);
+    const buffer = Buffer.from(bytes);
 
     const ext = path.extname(file.name).toLowerCase() || ".jpg";
     const baseName = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
     const isHeic = ext === ".heic" || ext === ".heif";
 
     let finalName: string;
-    let imageUrl: string;
 
-    if (isHeic && !isProduction) {
-      // Local dev: convert HEIC to JPEG using sips (macOS only)
+    if (isHeic) {
       const origName = `${baseName}${ext}`;
-      const uploadDir = path.join(process.cwd(), "public", "uploads", "projects");
       const origPath = path.join(uploadDir, origName);
       finalName = `${baseName}.jpg`;
       const finalPath = path.join(uploadDir, finalName);
@@ -96,22 +108,12 @@ export async function POST(request: NextRequest) {
       } catch {
         finalName = origName;
       }
-      imageUrl = `/uploads/projects/${finalName}`;
-    } else if (isHeic && isProduction) {
-      // Production: upload as-is (or skip HEIC - browsers still can't display them)
-      // For now, upload the raw file - users should upload JPG/PNG in production
-      finalName = `${baseName}${ext}`;
-      imageUrl = await uploadToBlob(buffer, finalName);
     } else {
-      // Normal image (JPG, PNG, WEBP, etc.)
       finalName = `${baseName}${ext}`;
-
-      if (isProduction) {
-        imageUrl = await uploadToBlob(buffer, finalName);
-      } else {
-        imageUrl = await uploadLocal(buffer, finalName);
-      }
+      await writeFile(path.join(uploadDir, finalName), buffer);
     }
+
+    const imageUrl = `/uploads/projects/${finalName}`;
 
     const result = await db.execute({
       sql: "INSERT INTO project_images (category_id, image_path, display_order) VALUES (?, ?, ?)",
@@ -168,13 +170,11 @@ export async function DELETE(request: NextRequest) {
 
   const { id } = await request.json();
 
-  // Get the image path before deleting
   const img = await db.execute({
     sql: "SELECT image_path FROM project_images WHERE id = ?",
     args: [id],
   });
 
-  // Delete from blob storage if it's a blob URL
   if (img.rows.length > 0) {
     const imagePath = img.rows[0].image_path as string;
     if (imagePath.includes("blob.vercel-storage.com")) {

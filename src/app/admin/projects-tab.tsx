@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
+import { upload } from "@vercel/blob/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -339,23 +340,33 @@ export function ProjectsTab() {
     if (!e.target.files || !selectedCategory) return;
 
     setUploading(true);
-    const formData = new FormData();
-    formData.append("category_id", String(selectedCategory.id));
-
-    for (const file of Array.from(e.target.files)) {
-      formData.append("files", file);
-    }
+    const files = Array.from(e.target.files);
 
     try {
-      const res = await fetch("/api/admin/images", {
-        method: "POST",
-        body: formData,
-      });
+      for (const file of files) {
+        const baseName = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+        const ext = file.name.split(".").pop()?.toLowerCase() || "jpg";
+        const fileName = `projects/${baseName}.${ext}`;
 
-      if (res.ok) {
-        fetchImages(selectedCategory.id);
-        fetchCategories();
+        // Client-side upload to Vercel Blob (no size limit)
+        const blob = await upload(fileName, file, {
+          access: "public",
+          handleUploadUrl: "/api/admin/upload",
+        });
+
+        // Save the blob URL to the database
+        await fetch("/api/admin/images", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            category_id: selectedCategory.id,
+            image_url: blob.url,
+          }),
+        });
       }
+
+      fetchImages(selectedCategory.id);
+      fetchCategories();
     } catch {
       alert("Upload failed. Please try again.");
     } finally {
