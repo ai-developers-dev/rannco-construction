@@ -22,7 +22,7 @@ export function AboutPreview() {
               <div
                 className="absolute inset-0 bg-cover bg-center"
                 style={{
-                  backgroundImage: `url('/images/projects/IMG_6647.PNG')`,
+                  backgroundImage: `url('/images/projects/why-choose-us.jpg')`,
                 }}
               />
             </div>
