@@ -92,16 +92,27 @@ interface ProjectImage {
   image_path: string;
   display_order: number;
   featured: number;
+  posted_google: number;
+  posted_meta: number;
+}
+
+interface PlatformConfig {
+  google: boolean;
+  meta: boolean;
 }
 
 function SortableImage({
   img,
   onDelete,
   onToggleFeatured,
+  onPostToSocial,
+  platforms,
 }: {
   img: ProjectImage;
   onDelete: (id: number) => void;
   onToggleFeatured: (id: number, featured: boolean) => void;
+  onPostToSocial: (id: number, platform: "google" | "meta") => void;
+  platforms: PlatformConfig;
 }) {
   const {
     attributes,
@@ -170,9 +181,45 @@ function SortableImage({
           <Trash2 className="h-3.5 w-3.5" />
         </Button>
       </div>
-      {/* Order number */}
-      <div className="absolute bottom-1 left-1 bg-black/60 text-white text-xs px-1.5 py-0.5 rounded opacity-0 group-hover:opacity-100 transition-opacity">
-        #{img.display_order + 1}
+      {/* Bottom bar: order number + social icons */}
+      <div className="absolute bottom-1 left-1 right-1 flex items-center justify-between opacity-0 group-hover:opacity-100 transition-opacity">
+        <div className="bg-black/60 text-white text-xs px-1.5 py-0.5 rounded">
+          #{img.display_order + 1}
+        </div>
+        <div className="flex gap-1">
+          {platforms.google && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                if (!img.posted_google) onPostToSocial(img.id, "google");
+              }}
+              className={`w-6 h-6 rounded flex items-center justify-center text-xs font-bold transition-all ${
+                img.posted_google
+                  ? "bg-blue-500 text-white opacity-100"
+                  : "bg-black/50 hover:bg-black/70 text-white"
+              }`}
+              title={img.posted_google ? "Posted to Google" : "Post to Google Business"}
+            >
+              G
+            </button>
+          )}
+          {platforms.meta && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                if (!img.posted_meta) onPostToSocial(img.id, "meta");
+              }}
+              className={`w-6 h-6 rounded flex items-center justify-center text-xs font-bold transition-all ${
+                img.posted_meta
+                  ? "bg-blue-600 text-white opacity-100"
+                  : "bg-black/50 hover:bg-black/70 text-white"
+              }`}
+              title={img.posted_meta ? "Posted to Meta" : "Post to Facebook"}
+            >
+              f
+            </button>
+          )}
+        </div>
       </div>
     </div>
   );
@@ -186,6 +233,7 @@ export function ProjectsTab() {
   const [loadingImages, setLoadingImages] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [platforms, setPlatforms] = useState<PlatformConfig>({ google: false, meta: false });
 
   // Add category dialog
   const [addCatOpen, setAddCatOpen] = useState(false);
@@ -226,6 +274,10 @@ export function ProjectsTab() {
 
   useEffect(() => {
     fetchCategories().finally(() => setLoading(false));
+    fetch("/api/admin/post-image")
+      .then((r) => r.json())
+      .then((data) => setPlatforms(data))
+      .catch(() => {});
   }, []);
 
   const handleSelectCategory = (cat: Category) => {
@@ -372,6 +424,39 @@ export function ProjectsTab() {
     } finally {
       setUploading(false);
       if (fileInputRef.current) fileInputRef.current.value = "";
+    }
+  };
+
+  const handlePostToSocial = async (imageId: number, platform: "google" | "meta") => {
+    const platformName = platform === "google" ? "Google Business Profile" : "Facebook";
+    if (!confirm(`Post this image to ${platformName}?`)) return;
+
+    try {
+      const res = await fetch("/api/admin/post-image", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: imageId, platform }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        alert(`Failed to post: ${data.error}`);
+        return;
+      }
+
+      setImages((prev) =>
+        prev.map((img) =>
+          img.id === imageId
+            ? {
+                ...img,
+                ...(platform === "google" ? { posted_google: 1 } : { posted_meta: 1 }),
+              }
+            : img
+        )
+      );
+    } catch {
+      alert("Failed to post. Please try again.");
     }
   };
 
@@ -652,6 +737,8 @@ export function ProjectsTab() {
                       img={img}
                       onDelete={handleDeleteImage}
                       onToggleFeatured={handleToggleFeatured}
+                      onPostToSocial={handlePostToSocial}
+                      platforms={platforms}
                     />
                   ))}
                 </div>

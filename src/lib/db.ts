@@ -50,6 +50,8 @@ export async function initializeDb() {
         image_path TEXT NOT NULL,
         display_order INTEGER NOT NULL DEFAULT 0,
         featured INTEGER NOT NULL DEFAULT 0,
+        posted_google INTEGER NOT NULL DEFAULT 0,
+        posted_meta INTEGER NOT NULL DEFAULT 0,
         created_at TEXT NOT NULL DEFAULT (datetime('now')),
         FOREIGN KEY (category_id) REFERENCES project_categories(id) ON DELETE CASCADE
       )`,
@@ -73,6 +75,16 @@ export async function initializeDb() {
         // Column may already exist
       }
       await db.execute({ sql: "INSERT OR IGNORE INTO _migrations (name) VALUES (?)", args: ["add_featured_column"] });
+    }
+
+    if (!done.has("add_social_posting_columns")) {
+      try {
+        await db.execute("ALTER TABLE project_images ADD COLUMN posted_google INTEGER NOT NULL DEFAULT 0");
+      } catch { /* Column may already exist */ }
+      try {
+        await db.execute("ALTER TABLE project_images ADD COLUMN posted_meta INTEGER NOT NULL DEFAULT 0");
+      } catch { /* Column may already exist */ }
+      await db.execute({ sql: "INSERT OR IGNORE INTO _migrations (name) VALUES (?)", args: ["add_social_posting_columns"] });
     }
   } catch {
     // _migrations table might not exist yet on first run
